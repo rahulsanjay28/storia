@@ -9,13 +9,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.asu.storia.network.GetLatestStoriesRequest;
-import com.asu.storia.network.GetLatestStoriesResponse;
+import com.asu.storia.utils.StoriaSharedPreferenceUtils;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Random;
 
 public class ScreenOnOffReceiver extends BroadcastReceiver {
 
@@ -25,9 +25,39 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
             Log.i(TAG, "ACTION SCREEN OFF");
-            final PendingResult pendingResult = goAsync();
-            Task asyncTask = new Task(pendingResult, intent, context);
-            asyncTask.execute();
+            String storyUrls = StoriaSharedPreferenceUtils.getInstance().getStories(context);
+            String[] storiesList = new Gson().fromJson(storyUrls, String[].class);
+            if(storiesList != null){
+                int random = new Random().nextInt(storiesList.length);
+                final WallpaperManager wallpaperManager = WallpaperManager.getInstance(context.getApplicationContext());
+                Target target = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        Log.i(TAG, "onBitmapLoaded");
+                        try {
+                            wallpaperManager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        Log.i(TAG, "onBitmapFailed");
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.i(TAG, "onPrepareLoad");
+                    }
+                };
+
+                Picasso.get().load(storiesList[random]).into(target);
+            }
+
+//            final PendingResult pendingResult = goAsync();
+//            Task asyncTask = new Task(pendingResult, intent, context);
+//            asyncTask.execute();
         }
     }
 
@@ -45,34 +75,35 @@ public class ScreenOnOffReceiver extends BroadcastReceiver {
 
         @Override
         protected Void doInBackground(String... voids) {
-            new GetLatestStoriesRequest().getLatestStories(new GetLatestStoriesResponse(){
-                @Override
-                public void onResponse(List<String> response) {
-                    final WallpaperManager wallpaperManager = WallpaperManager.getInstance(context.getApplicationContext());
-                    Target target = new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            Log.i(TAG, "onBitmapLoaded");
-                            try {
-                                wallpaperManager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+            String storyUrls = StoriaSharedPreferenceUtils.getInstance().getStories(context);
+            String[] storiesList = new Gson().fromJson(storyUrls, String[].class);
+            if(storiesList != null){
+                int random = new Random().nextInt(storiesList.length);
+                final WallpaperManager wallpaperManager = WallpaperManager.getInstance(context.getApplicationContext());
+                Target target = new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        Log.i(TAG, "onBitmapLoaded");
+                        try {
+                            wallpaperManager.setBitmap(bitmap, null, false, WallpaperManager.FLAG_LOCK);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                    }
 
-                        @Override
-                        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
-                            Log.i(TAG, "onBitmapFailed");
-                        }
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        Log.i(TAG, "onBitmapFailed");
+                    }
 
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-                            Log.i(TAG, "onPrepareLoad");
-                        }
-                    };
-                    Picasso.get().load(response.get(0)).into(target);
-                }
-            });
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.i(TAG, "onPrepareLoad");
+                    }
+                };
+
+                Picasso.get().load(storiesList[random]).into(target);
+            }
             return null;
         }
 

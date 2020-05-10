@@ -5,17 +5,20 @@
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/storia_app_icon"
         android:label="@string/app_name"
         android:roundIcon="@drawable/storia_app_icon"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".activities.StoriaMainActivity"></activity>
-        <activity android:name=".activities.StoriaSignInActivity" />
-        <activity android:name=".activities.StoriaBaseActivity">
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true">
+        <activity android:name=".activities.StoriaHomeActivity" android:theme="@style/AppTheme1"></activity>
+        <activity android:name=".activities.StoriaSignInActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".activities.StoriaSignUpActivity" android:theme="@style/AppTheme"/>
+        <activity android:name=".activities.StoriaMainActivity" android:theme="@style/AppTheme"/>
+        <activity android:name=".activities.StoriaBaseActivity" android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,10 +41,6 @@
             android:name=".service.UpdateLockScreenStorySerivce"
             android:enabled="true"
             android:exported="true" />
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

@@ -48,14 +48,14 @@ public class UpdateLockScreenStorySerivce extends Service {
             NotificationChannel notificationChannel = new NotificationChannel(
                     "storia_service_channel",
                     "Storia Notification Channel",
-                    NotificationManager.IMPORTANCE_LOW);
+                    NotificationManager.IMPORTANCE_DEFAULT);
 
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
 
             Notification notification = new Notification.Builder(this.getBaseContext(), notificationChannel.getId())
-                    .setContentTitle("Hi! I'm service")
+                    .setContentTitle("Enjoy beautiful wallpapers")
                     .setContentIntent(pendingIntent)
                     .setOngoing(true).build();
 
